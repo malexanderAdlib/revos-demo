@@ -13,7 +13,7 @@
 import type {
   Account, AccountContext, ChangeEvent, ChangeEventsResult, Viewer,
   RepScorecard, XdrScorecard, CsmScorecard, FunnelVelocity, Roadmap,
-  RevosRequestRow, ProspectingRequestRow, AskResult, AgentResult, ScoreCell, Rag,
+  RevosRequestRow, ProspectingRequestRow, Partner, AskResult, AgentResult, ScoreCell, Rag,
 } from "./api";
 
 // Dates relative to "now" so the preview always looks current.
@@ -303,6 +303,65 @@ const FUNNEL_VELOCITY: FunnelVelocity = {
   viewer: VIEWER,
 };
 
+// ---- Partner pipeline (Cube) ----------------------------------------------
+const PARTNER: Partner = {
+  as_of: iso(0),
+  basis: "Open pipeline · Net New ACV Yr1 · keyed on the partner name (Sourcing_Partner__c / Partner__c). Demo data.",
+  note: "Channel Type (Sales_Type__c) is shown only as a cross-check — the two partner-name views above are the source of truth.",
+  totals: {
+    partner_channel_nnacv: 380000,
+    sourced_nnacv: 500000,
+    contracting_nnacv: 250000,
+    influenced_nnacv: 240000,
+  },
+  sourced_by_partner: [
+    {
+      partner: "Capgemini", nnacv: 350000, count: 2,
+      motions: [{ motion: "Co-Sell", count: 2, nnacv: 350000 }],
+      deals: [
+        { id: "opp_101", name: "Meridian — FY26 Transform Migration", account: "Meridian Life Sciences", stage: "Negotiate", nnacv: 210000, motion: "Co-Sell", lead_source: "Partner" },
+        { id: "opp_201", name: "Cascade — Claims Intake Automation", account: "Cascade Mutual Insurance", stage: "Validate", nnacv: 140000, motion: "Co-Sell", lead_source: "Partner" },
+      ],
+    },
+    {
+      partner: "Carahsoft", nnacv: 90000, count: 1,
+      motions: [{ motion: "Partner Driven", count: 1, nnacv: 90000 }],
+      deals: [
+        { id: "opp_501", name: "Summit Energy — AI Link", account: "Summit Energy Partners", stage: "Validate", nnacv: 90000, motion: "Partner Driven", lead_source: "Partner" },
+      ],
+    },
+    {
+      partner: "CBTS", nnacv: 60000, count: 1,
+      motions: [{ motion: "Influence", count: 1, nnacv: 60000 }],
+      deals: [
+        { id: "opp_301", name: "Orion — Capacity add-on", account: "Orion Manufacturing", stage: "Propose", nnacv: 60000, motion: "Influence", lead_source: "Website" },
+      ],
+    },
+  ],
+  contracting_by_partner: [
+    {
+      partner: "Carahsoft", nnacv: 165000, count: 2,
+      motions: [{ motion: "Partner Driven", count: 2, nnacv: 165000 }],
+      deals: [
+        { id: "opp_501", name: "Summit Energy — AI Link", account: "Summit Energy Partners", stage: "Validate", nnacv: 90000, motion: "Partner Driven", lead_source: "Partner" },
+        { id: "opp_701", name: "Vanta — Reg Submissions", account: "Vanta Pharmaceuticals", stage: "Qualify", nnacv: 75000, motion: "Partner Driven", lead_source: "Partner" },
+      ],
+    },
+    {
+      partner: "Deloitte Digital", nnacv: 85000, count: 1,
+      motions: [{ motion: "Services Only", count: 1, nnacv: 85000 }],
+      deals: [
+        { id: "opp_401", name: "Brightpath Bio — Transform expansion", account: "Brightpath Bio", stage: "Propose", nnacv: 85000, motion: "Services Only", lead_source: "Partner" },
+      ],
+    },
+  ],
+  by_channel: [
+    { channel: "Partner", count: 4, nnacv: 380000 },
+    { channel: "Hybrid", count: 2, nnacv: 160000 },
+  ],
+  inbound_leads: { total: 214, fy_cohort: 62, mql: 28, sql: 14, oppty: 6, active: 41 },
+};
+
 // ---- Roadmap --------------------------------------------------------------
 const ROADMAP: Roadmap = {
   updated: iso(-1), owner: "RevOS Team",
@@ -439,6 +498,7 @@ export function demoResponse(method: "GET" | "POST", rawPath: string, body?: unk
     if (path === "/roadmap") return ROADMAP;
     if (path === "/revos-requests") return REVOS_REQUESTS;
     if (path === "/prospecting-requests") return PROSPECTING_REQUESTS;
+    if (path === "/partner") return PARTNER;
   } else {
     if (path === "/ask") return askResult((body as { question?: string })?.question ?? "");
     if (path === "/agent") return agentResult((body as { instruction?: string })?.instruction ?? "");

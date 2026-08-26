@@ -3,6 +3,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { Card } from "./ui";
+import { PartnerView } from "./PartnerView";
 
 // Cube — the pipeline dashboard, folded into RevOS as one tab. Its views migrate
 // in as sub-tabs; the standalone dashboard is retired once they're all ported.
@@ -19,7 +20,7 @@ const SUBTABS: { id: SubTab; label: string; blurb: string; ready?: boolean }[] =
   { id: "industry", label: "Industry", blurb: "Open pipeline and win rate by industry — Life Sciences, Insurance, Manufacturing, and the rest." },
   { id: "winrate", label: "Win Rate", blurb: "Win rate by revenue type across current FY, trailing 12 months, and multi-year." },
   { id: "newlogo", label: "New Logo", blurb: "New-logo pipeline and closed-won — the acquisition motion on its own." },
-  { id: "partner", label: "Partner Pipeline", blurb: "Sourced vs contracting partner views, keyed on the partner name (not the distrusted channel field).", ready: true },
+  { id: "partner", label: "Partner Pipeline", blurb: "Sourced vs contracting partner views, keyed on the partner name (not the distrusted channel field)." },
   { id: "wow", label: "Week-over-Week", blurb: "Deal-level movers — what gained, slipped, or left the pipeline since last snapshot." },
   { id: "forecast", label: "Forecast", blurb: "The forecast call and the build-to-plan waterfall — New Logo → Cross-sell → Migrations → Capacity → Renewal Uplift → Churn." },
   { id: "exclusions", label: "Exclusions", blurb: "Accounts and opportunities held out of the pipeline rollups, and why." },
@@ -58,27 +59,21 @@ export function CubeArea() {
       </div>
 
       <div className="mx-auto max-w-[1280px] px-[22px] pt-6">
-        <Card
-          className={clsx(
-            "p-5",
-            active.ready ? "border-revos-good/40 bg-revos-goodwash" : "border-revos-warn/40 bg-revos-warnwash",
-          )}
-        >
-          <div
-            className={clsx(
-              "text-[11px] font-bold uppercase tracking-[0.1em]",
-              active.ready ? "text-revos-good" : "text-revos-warn",
-            )}
-          >
-            {active.ready ? "Built — porting the view into RevOS" : "Migrating in from the pipeline dashboard"}
-          </div>
-          <div className="mt-1.5 text-[15px] font-semibold text-revos-ink">{active.label}</div>
-          <p className="mt-1.5 max-w-[660px] text-[13px] text-revos-ink2">{active.blurb}</p>
-          <p className="mt-3 text-[12px] text-revos-ink3">
-            The pipeline dashboard is being migrated into RevOS so the whole cube lives here — same snapshots, same
-            live Salesforce, one workspace. The standalone dashboard is retired once every view lands.
-          </p>
-        </Card>
+        {tab === "partner" ? (
+          <PartnerView />
+        ) : (
+          <Card className="border-revos-warn/40 bg-revos-warnwash p-5">
+            <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-revos-warn">
+              Migrating in from the pipeline dashboard
+            </div>
+            <div className="mt-1.5 text-[15px] font-semibold text-revos-ink">{active.label}</div>
+            <p className="mt-1.5 max-w-[660px] text-[13px] text-revos-ink2">{active.blurb}</p>
+            <p className="mt-3 text-[12px] text-revos-ink3">
+              The pipeline dashboard is being migrated into RevOS so the whole cube lives here — same snapshots, same
+              live Salesforce, one workspace. The standalone dashboard is retired once every view lands.
+            </p>
+          </Card>
+        )}
       </div>
     </div>
   );

@@ -320,6 +320,36 @@ export type FunnelVelocity = {
   stages: VelocityStage[]; note: string; viewer?: Viewer;
 };
 
+// Partner pipeline (Cube tab). Two views keyed by the PARTNER NAME: SOURCED = who
+// brought the deal (Sourcing_Partner__c) + their motion; CONTRACTING = whose paper
+// it's on (Partner__c) + the contracting motion. Channel Type (Sales_Type__c) is a
+// cross-check only — the free field Sharon distrusts.
+export type PartnerDeal = {
+  id: string; name: string | null; account: string | null; stage: string | null;
+  nnacv: number; motion: string | null; lead_source: string | null;
+};
+export type PartnerMotion = { motion: string; count: number; nnacv: number };
+export type PartnerRollup = {
+  partner: string; nnacv: number; count: number;
+  motions: PartnerMotion[]; deals: PartnerDeal[];
+};
+export type PartnerChannel = { channel: string; count: number; nnacv: number };
+export type Partner = {
+  as_of: string;
+  basis: string;
+  note?: string;
+  totals: {
+    partner_channel_nnacv: number;
+    sourced_nnacv: number;
+    contracting_nnacv: number;
+    influenced_nnacv: number;
+  };
+  sourced_by_partner: PartnerRollup[];
+  contracting_by_partner: PartnerRollup[];
+  by_channel: PartnerChannel[];
+  inbound_leads?: { total: number; fy_cohort: number; mql: number; sql: number; oppty: number; active: number };
+};
+
 // ---- Endpoints ------------------------------------------------------------
 
 export const api = {
@@ -381,6 +411,9 @@ export const api = {
   prospectingRequests: (status?: string) =>
     get<{ count: number; requests: ProspectingRequestRow[] }>(
       `/prospecting-requests${status ? `?status=${encodeURIComponent(status)}` : ""}`),
+
+  // Cube — partner pipeline (sourced + contracting, keyed on partner name).
+  partner: () => get<Partner>("/partner"),
 };
 
 // ---- Formatting helpers ---------------------------------------------------
