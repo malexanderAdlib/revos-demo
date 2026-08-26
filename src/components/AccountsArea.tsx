@@ -18,6 +18,7 @@ import {
   type ChangeEvent,
 } from "@/lib/api";
 import { Card, CardHead, Dot, Pill } from "./ui";
+import { ProspectingBox } from "./ProspectingBox";
 
 type Loadable<T> = { state: "loading" | "ready" | "error"; data: T | null; error?: string };
 
@@ -245,6 +246,9 @@ export function AccountsArea({ initialAccountId }: { initialAccountId?: string |
                 events={events}
               />
             )}
+
+            {/* Clay request — request contacts for your book (leads you own). */}
+            <ProspectingBox />
           </div>
         )}
       </div>

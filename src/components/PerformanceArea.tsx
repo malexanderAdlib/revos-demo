@@ -158,14 +158,6 @@ function Resolved({ me }: { me: Viewer }) {
           {showLeaderGrids && primary !== "csm" && (
             <ScorecardGrid kicker="CSM Scorecard" title="Strategic book vs target" loadable={csm} toGrid={csmToGrid} companyWide />
           )}
-
-          <Card className="p-4">
-            <div className="text-[12.5px] text-revos-ink2">
-              This is the one-view summary. The full scorecard has the deep tabs — Account 360, Deal Activity, Call
-              Blitz, Meetings Booked, the funnel, and drill-into-opps.
-            </div>
-            <FullScorecardLink />
-          </Card>
         </div>
       )}
     </Shell>

@@ -5,12 +5,14 @@ import { AdlibHeader, type Area } from "@/components/AdlibHeader";
 import { AccountsArea } from "@/components/AccountsArea";
 import { AskArea } from "@/components/AskArea";
 import { HomeArea } from "@/components/HomeArea";
-import { PerformanceArea } from "@/components/PerformanceArea";
+import { ScorecardArea } from "@/components/ScorecardArea";
+import { CubeArea } from "@/components/CubeArea";
 import { RoadmapArea } from "@/components/RoadmapArea";
 import { getUserEmail } from "@/lib/api";
 
-// RevOS shell — the 5-area workspace (Home · Ask · Accounts · Performance ·
-// Roadmap), all built. Role only decides SCOPE, enforced server-side.
+// RevOS shell — one home for everything (Home · Ask · Accounts · Scorecard ·
+// Cube · Roadmap). Scorecard folds in the standalone scorecard app; Cube folds
+// in the pipeline dashboard. Role only decides SCOPE, enforced server-side.
 export default function Page() {
   const [area, setArea] = useState<Area>("home");
   const [email, setEmail] = useState<string | null>(null);
@@ -37,8 +39,10 @@ export default function Page() {
         <AskArea />
       ) : area === "accounts" ? (
         <AccountsArea initialAccountId={pendingAccountId} />
-      ) : area === "performance" ? (
-        <PerformanceArea />
+      ) : area === "scorecard" ? (
+        <ScorecardArea />
+      ) : area === "cube" ? (
+        <CubeArea />
       ) : (
         <RoadmapArea />
       )}

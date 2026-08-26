@@ -13,7 +13,7 @@
 import type {
   Account, AccountContext, ChangeEvent, ChangeEventsResult, Viewer,
   RepScorecard, XdrScorecard, CsmScorecard, FunnelVelocity, Roadmap,
-  RevosRequestRow, AskResult, AgentResult, ScoreCell, Rag,
+  RevosRequestRow, ProspectingRequestRow, AskResult, AgentResult, ScoreCell, Rag,
 } from "./api";
 
 // Dates relative to "now" so the preview always looks current.
@@ -344,6 +344,22 @@ const REVOS_REQUESTS: { count: number; requests: RevosRequestRow[] } = {
   ],
 };
 
+// ---- Prospecting (Clay) requests ------------------------------------------
+const PROSPECTING_REQUESTS: { count: number; requests: ProspectingRequestRow[] } = {
+  count: 2,
+  requests: [
+    { id: 58, created_at: ts(2), requester: "demo@adlib.example",
+      accounts: [{ domain: "meridianls.com" }, { domain: "brightpathbio.com" }],
+      personas: ["VP Regulatory Affairs", "Director RIM"], needs: ["email", "phone"],
+      max_per_account: 5, notes: null, status: "fulfilled",
+      result: { created_leads: 8, found: 9 }, fulfilled_at: ts(1), error: null },
+    { id: 57, created_at: ts(5), requester: "demo@adlib.example",
+      accounts: [{ domain: "cascademutual.com" }], personas: ["SVP Claims", "Head of Automation"],
+      needs: ["email"], max_per_account: 4, notes: "US sites only", status: "new",
+      result: null, fulfilled_at: null, error: null },
+  ],
+};
+
 // ---- Ask + Agent ----------------------------------------------------------
 function askResult(question: string): AskResult {
   const q = (question || "").trim();
@@ -422,12 +438,19 @@ export function demoResponse(method: "GET" | "POST", rawPath: string, body?: unk
     if (path === "/funnel-velocity") return FUNNEL_VELOCITY;
     if (path === "/roadmap") return ROADMAP;
     if (path === "/revos-requests") return REVOS_REQUESTS;
+    if (path === "/prospecting-requests") return PROSPECTING_REQUESTS;
   } else {
     if (path === "/ask") return askResult((body as { question?: string })?.question ?? "");
     if (path === "/agent") return agentResult((body as { instruction?: string })?.instruction ?? "");
     if (path === "/revos-request") {
       const b = (body as { kind?: string }) || {};
       return { id: ++requestSeq, created_at: new Date().toISOString(), kind: b.kind ?? "idea", status: "open" };
+    }
+    if (path === "/prospecting-request") {
+      const b = (body as { accounts?: unknown[]; max_per_account?: number }) || {};
+      const nAcc = (b.accounts || []).length;
+      return { id: ++requestSeq, created_at: new Date().toISOString(), status: "new",
+               accounts: nAcc, estimated_contacts: nAcc * (b.max_per_account || 5) };
     }
   }
   throw new Error(`demo: no fixture for ${method} ${rawPath}`);

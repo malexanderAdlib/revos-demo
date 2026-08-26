@@ -4,13 +4,14 @@
 // the 5-area nav (Home · Ask · Accounts · Performance · Roadmap). Light-only,
 // brand blue (#0055CC), matching the approved mock.
 
-export type Area = "home" | "ask" | "accounts" | "performance" | "roadmap";
+export type Area = "home" | "ask" | "accounts" | "scorecard" | "cube" | "roadmap";
 
 export const AREAS: { id: Area; label: string }[] = [
   { id: "home", label: "Home" },
   { id: "ask", label: "Ask" },
   { id: "accounts", label: "Accounts" },
-  { id: "performance", label: "Performance" },
+  { id: "scorecard", label: "Scorecard" },
+  { id: "cube", label: "Cube" },
   { id: "roadmap", label: "Roadmap" },
 ];
 

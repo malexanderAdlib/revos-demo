@@ -290,6 +290,25 @@ export type RevosRequestRow = {
   status: string; source: string; triage_note: string | null;
 };
 
+// Prospecting requests — sellers request contacts for target accounts; Clay stays
+// central and an automated worker fulfills into Salesforce as leads they own. The
+// requester is stamped server-side. accounts/result come back as jsonb.
+export type ProspectingAccountInput = { name?: string; domain: string };
+export type ProspectingRequestInput = {
+  accounts: ProspectingAccountInput[];
+  personas: string[];
+  needs?: string[];
+  max_per_account?: number;
+  notes?: string;
+};
+export type ProspectingRequestRow = {
+  id: number; created_at: string; requester: string;
+  accounts: ProspectingAccountInput[]; personas: string[]; needs: string[];
+  max_per_account: number; notes: string | null; status: string;
+  result: { created_leads?: number; found?: number } | null;
+  fulfilled_at: string | null; error: string | null;
+};
+
 // Open pipeline by stage — count, dollars, and how long deals have sat there.
 export type VelocityStage = {
   stage: string; count: number; amount_usd: number;
@@ -353,6 +372,15 @@ export const api = {
   revosRequests: (status?: string) =>
     get<{ count: number; requests: RevosRequestRow[] }>(
       `/revos-requests${status ? `?status=${encodeURIComponent(status)}` : ""}`),
+
+  // Clay request — request contacts for target accounts; a worker enriches them
+  // into Salesforce as leads you own. No Clay seat needed.
+  submitProspectingRequest: (body: ProspectingRequestInput) =>
+    post<{ id: number; created_at: string; status: string; accounts: number; estimated_contacts: number }>(
+      "/prospecting-request", body),
+  prospectingRequests: (status?: string) =>
+    get<{ count: number; requests: ProspectingRequestRow[] }>(
+      `/prospecting-requests${status ? `?status=${encodeURIComponent(status)}` : ""}`),
 };
 
 // ---- Formatting helpers ---------------------------------------------------
