@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* RevOS is LIGHT-ONLY (blue & white). Force the light color-scheme for everyone
+   so a dark-mode browser can't tint form controls / scrollbars navy. */
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: #f2f5fa; /* revos.ground */
+  color: #0f1729; /* revos.ink */
+  font-family: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  font-size: 13.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
