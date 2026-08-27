@@ -2,33 +2,53 @@
 
 import { useState } from "react";
 import clsx from "clsx";
-import { Card } from "./ui";
 import { PartnerView } from "./PartnerView";
+import { OpenPipelineView } from "./OpenPipeline";
+import { CreatedView } from "./CreatedView";
+import { IndustryView } from "./IndustryView";
+import { SummaryView } from "./SummaryView";
+import { ForecastView } from "./ForecastView";
+import { NewLogoView } from "./NewLogoView";
+import { WinRateView } from "./WinRateView";
+import { ExclusionsView } from "./ExclusionsView";
+import { WowView } from "./WowView";
 
-// Cube — the pipeline dashboard, folded into RevOS as one tab. Its views migrate
-// in as sub-tabs; the standalone dashboard is retired once they're all ported.
-// Partner Pipeline just shipped on the dashboard, so it's flagged as ready.
+// Cube — the pipeline dashboard, folded into RevOS as one tab. All ten views now
+// read the same live pipeline API (demo fixtures on the preview). The standalone
+// dashboard is retired once verified against live data.
 
 type SubTab =
   | "summary" | "open" | "created" | "industry" | "winrate"
   | "newlogo" | "partner" | "wow" | "forecast" | "exclusions";
 
-const SUBTABS: { id: SubTab; label: string; blurb: string; ready?: boolean }[] = [
-  { id: "summary", label: "Summary", blurb: "The headline pipeline KPIs — open NN ACV, coverage vs plan, closed-won FYTD, week-over-week movement." },
-  { id: "open", label: "Open Pipeline", blurb: "Open pipeline by stage and close quarter — where the deals actually are." },
-  { id: "created", label: "Created", blurb: "New pipeline created FYTD, by lead source." },
-  { id: "industry", label: "Industry", blurb: "Open pipeline and win rate by industry — Life Sciences, Insurance, Manufacturing, and the rest." },
-  { id: "winrate", label: "Win Rate", blurb: "Win rate by revenue type across current FY, trailing 12 months, and multi-year." },
-  { id: "newlogo", label: "New Logo", blurb: "New-logo pipeline and closed-won — the acquisition motion on its own." },
-  { id: "partner", label: "Partner Pipeline", blurb: "Sourced vs contracting partner views, keyed on the partner name (not the distrusted channel field)." },
-  { id: "wow", label: "Week-over-Week", blurb: "Deal-level movers — what gained, slipped, or left the pipeline since last snapshot." },
-  { id: "forecast", label: "Forecast", blurb: "The forecast call and the build-to-plan waterfall — New Logo → Cross-sell → Migrations → Capacity → Renewal Uplift → Churn." },
-  { id: "exclusions", label: "Exclusions", blurb: "Accounts and opportunities held out of the pipeline rollups, and why." },
+const SUBTABS: { id: SubTab; label: string }[] = [
+  { id: "summary", label: "Summary" },
+  { id: "open", label: "Open Pipeline" },
+  { id: "created", label: "Created" },
+  { id: "industry", label: "Industry" },
+  { id: "winrate", label: "Win Rate" },
+  { id: "newlogo", label: "New Logo" },
+  { id: "partner", label: "Partner Pipeline" },
+  { id: "wow", label: "Week-over-Week" },
+  { id: "forecast", label: "Forecast" },
+  { id: "exclusions", label: "Exclusions" },
 ];
+
+const VIEWS: Record<SubTab, React.ReactNode> = {
+  summary: <SummaryView />,
+  open: <OpenPipelineView />,
+  created: <CreatedView />,
+  industry: <IndustryView />,
+  winrate: <WinRateView />,
+  newlogo: <NewLogoView />,
+  partner: <PartnerView />,
+  wow: <WowView />,
+  forecast: <ForecastView />,
+  exclusions: <ExclusionsView />,
+};
 
 export function CubeArea() {
   const [tab, setTab] = useState<SubTab>("summary");
-  const active = SUBTABS.find((t) => t.id === tab)!;
 
   return (
     <div>
@@ -58,23 +78,7 @@ export function CubeArea() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1280px] px-[22px] pt-6">
-        {tab === "partner" ? (
-          <PartnerView />
-        ) : (
-          <Card className="border-revos-warn/40 bg-revos-warnwash p-5">
-            <div className="text-[11px] font-bold uppercase tracking-[0.1em] text-revos-warn">
-              Migrating in from the pipeline dashboard
-            </div>
-            <div className="mt-1.5 text-[15px] font-semibold text-revos-ink">{active.label}</div>
-            <p className="mt-1.5 max-w-[660px] text-[13px] text-revos-ink2">{active.blurb}</p>
-            <p className="mt-3 text-[12px] text-revos-ink3">
-              The pipeline dashboard is being migrated into RevOS so the whole cube lives here — same snapshots, same
-              live Salesforce, one workspace. The standalone dashboard is retired once every view lands.
-            </p>
-          </Card>
-        )}
-      </div>
+      <div className="mx-auto max-w-[1280px] px-[22px] pt-6">{VIEWS[tab]}</div>
     </div>
   );
 }
